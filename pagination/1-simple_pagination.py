@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""This code creates a simple pagination"""
+"""A simple pagination"""
 
 import csv
 import math
@@ -7,7 +7,7 @@ from typing import List
 
 
 def index_range(page, page_size):
-    """ It returns a tuple of size two containing a start index and an
+    """ returns a tuple of size two containing a start index and an
         end index corresponding to the range
         of indexes to return in a list for those
         particular pagination parameters.
@@ -20,15 +20,15 @@ def index_range(page, page_size):
 
 
 class Server:
-    """server class paginayes a database of popular baby names.
+    """The Server class paginates a database of popular baby names.
     """
-    DATA_FILE = "data name"
+    DATA_FILE = "Popular_Baby_Names.csv"
 
     def __init__(self):
         self.__dataset = None
 
     def dataset(self) -> List[List]:
-        """This is a cached dataset
+        """A cached dataset
         """
         if self.__dataset is None:
             with open(self.DATA_FILE) as f:
@@ -38,7 +38,7 @@ class Server:
         return self.__dataset
 
     def get_page(self, page: int = 1, page_size: int = 10) -> List[List]:
-        """Now let's get the page"""
+        """gets the page"""
         assert type(page) is int and page > 0
         assert type(page_size) is int and page_size > 0
         page_info = index_range(page=page, page_size=page_size)
