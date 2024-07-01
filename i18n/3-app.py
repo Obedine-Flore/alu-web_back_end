@@ -1,18 +1,17 @@
 #!/usr/bin/env python3
 """
-0x0A. i18n
+This is the route module for the API
 """
-from os import getenv
 from flask import Flask, render_template, request
+from os import getenv
 from flask_babel import Babel
-
 
 app = Flask(__name__)
 babel = Babel(app)
 
 
 class Config(object):
-    """class config"""
+    """Configuring languages and time zone"""
     LANGUAGES = ['en', 'fr']
     BABEL_DEFAULT_LOCALE = 'en'
     BABEL_DEFAULT_TIMEZONE = 'UTC'
@@ -23,14 +22,14 @@ app.config.from_object(Config)
 
 @babel.localeselector
 def get_locale():
-    """get the locale"""
+    """The modified comment for the $SELECTION_PLACEHOLDER$ code is:"""
     return request.accept_languages.best_match(app.config['LANGUAGES'])
 
 
 @app.route('/')
 def index():
     """hello world"""
-    return render_template("1-index.html", message="Welcome to Holberton")
+    return render_template("3-index.html", message="Welcome to Holberton")
 
 
 if __name__ == "__main__":
