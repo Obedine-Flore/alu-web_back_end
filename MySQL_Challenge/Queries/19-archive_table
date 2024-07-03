@@ -1,0 +1,14 @@
+DELIMITER $$
+
+CREATE PROCEDURE ArchiveCompletedProjects()
+BEGIN
+    INSERT INTO ArchivedProjects (ProjectID, ProjectName, Requirements, Deadline, ClientID)
+    SELECT ProjectID, ProjectName, Requirements, Deadline, ClientID 
+    FROM Projects 
+    WHERE Deadline < CURDATE();
+    
+    DELETE FROM Projects 
+    WHERE Deadline < CURDATE();
+END$$
+
+DELIMITER ;

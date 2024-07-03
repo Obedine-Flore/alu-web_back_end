@@ -1,3 +1,1 @@
-SELECT ProjectName, Deadline
-FROM Projects
-WHERE ProjectID = 1;
+SELECT * FROM Projects WHERE Deadline < '2024-12-01';
