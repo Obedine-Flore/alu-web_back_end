@@ -1,7 +1,10 @@
-export default function getNeighborhoodsList() {
-  this.sanFranciscoNeighborhoods = ['SOMA', 'Union Square'];
-  this.addNeighborhood = (newNeighborhood) => {
-    this.sanFranciscoNeighborhoods.push(newNeighborhood);
-    return this.sanFranciscoNeighborhoods;
+export default function createReportObject(employeesList) {
+  return {
+    allEmployees: {
+      ...employeesList,
+    },
+    getNumberOfDepartments() {
+      return Object.keys(employeesList).length;
+    },
   };
 }
