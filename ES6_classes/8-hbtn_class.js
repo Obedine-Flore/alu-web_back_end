@@ -10,4 +10,3 @@ export default class HolbertonClass {
     return 42;
   }
 }
-
