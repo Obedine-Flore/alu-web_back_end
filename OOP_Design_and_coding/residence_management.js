@@ -1,81 +1,78 @@
-// residence-management.js
-
-class Residence {
-  constructor(name, address, isOccupied) {
-    this.name = name;
-    this.address = address;
-    this.isOccupied = isOccupied;
-  }
-}
-
-class DormRoom extends Residence {
-  constructor(name, address, isOccupied, size) {
-    super(name, address, isOccupied);
-    this.size = size; // size in square footage
-  }
-  
-  calculateRent() {
-    return this.size * 1.5; // Example calculation, can be adjusted
-  }
-}
-
-class Apartment extends Residence {
-  constructor(name, address, isOccupied, numBedrooms) {
-    super(name, address, isOccupied);
-    this.numBedrooms = numBedrooms;
-  }
-  
-  calculateRent() {
-    return this.numBedrooms * 500; // Example calculation, can be adjusted
-  }
-}
-
+// Class to represent a student
 class Student {
-  constructor(name, studentID, gender, residence = null) {
-    this.name = name;
-    this.studentID = studentID;
-    this.gender = gender;
-    this.residence = residence; // Reference to Residence
+  constructor(id, name, residence = null) {
+      this.id = id;
+      this.name = name;
+      this.residence = residence; // Link to Residence object
   }
 
   assignResidence(residence) {
-    this.residence = residence;
-    residence.isOccupied = true;
+      this.residence = residence;
   }
 }
 
+// Class to represent a residence
+class Residence {
+  constructor(id, name, capacity) {
+      this.id = id;
+      this.name = name;
+      this.capacity = capacity;
+      this.occupants = []; // Array of Student objects
+  }
+
+  addStudent(student) {
+      if (this.occupants.length < this.capacity) {
+          this.occupants.push(student);
+          student.assignResidence(this);
+      } else {
+          console.log("No room available in this residence.");
+      }
+  }
+
+  removeStudent(student) {
+      this.occupants = this.occupants.filter(occupant => occupant.id !== student.id);
+      student.assignResidence(null);
+  }
+}
+
+// Class to represent a maintenance request
 class MaintenanceRequest {
-  constructor(description, status, student, employee = null) {
-    this.description = description;
-    this.status = status; // e.g., "submitted", "in progress", "completed"
-    this.student = student; // Reference to Student
-    this.employee = employee; // Reference to Employee (if assigned)
+  constructor(id, residence, description) {
+      this.id = id;
+      this.residence = residence; // Link to Residence object
+      this.description = description;
+      this.status = "Pending";
   }
-  
-  assignEmployee(employee) {
-    this.employee = employee;
-  }
-  
-  updateStatus(newStatus) {
-    this.status = newStatus;
+
+  resolve() {
+      this.status = "Resolved";
   }
 }
 
-// Create a new dorm room and apartment
-const dormRoom = new DormRoom('Dorm A', '123 College St', false, 250);
-const apartment = new Apartment('Apt 1', '456 University Ave', false, 3);
+// Class to manage the residences and requests
+class ResidenceManager {
+  constructor() {
+      this.residences = [];
+      this.requests = [];
+  }
 
-// Create a new student
-const student = new Student('Jane Doe', 'S12345', 'Female');
+  addResidence(residence) {
+      this.residences.push(residence);
+  }
 
-// Assign residence to the student
-student.assignResidence(dormRoom);
+  createMaintenanceRequest(residence, description) {
+      const requestId = this.requests.length + 1;
+      const request = new MaintenanceRequest(requestId, residence, description);
+      this.requests.push(request);
+      return request;
+  }
 
-// Create a new maintenance request
-const maintenanceRequest = new MaintenanceRequest('Leaky faucet', 'submitted', student);
-
-// Display some information
-console.log('Welcome to the Residence Management System!')
-console.log(`Student ${student.name} is assigned to ${student.residence.name}`);
-console.log(`Rent for the dorm room is $${dormRoom.calculateRent()}`);
-console.log(`Maintenance request status: ${maintenanceRequest.status}`);
+  resolveRequest(requestId) {
+      const request = this.requests.find(req => req.id === requestId);
+      if (request) {
+          request.resolve();
+      } else {
+          console.log("Request not found.");
+      }
+  }
+}

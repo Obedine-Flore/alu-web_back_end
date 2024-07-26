@@ -1,12 +1,187 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>University Residence Management System</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>University Residence Management</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .residence, .student, .maintenance {
+            margin: 10px 0;
+            padding: 5px;
+            border: 1px solid #ddd;
+        }
+    </style>
 </head>
 <body>
-  <h1>University Residence Management System</h1>
-  <script src="residence_management.js" defer>
-  </script>
+    <h1>Welcome to the University Residence Management</h1>
+
+    <div>
+        <h2>Assign Residence to Student</h2>
+        <form id="assignResidenceForm">
+            <label for="student">Student:</label>
+            <select id="student">
+                <option value="1">Alice</option>
+                <option value="2">Bob</option>
+            </select>
+            <label for="residence">Residence:</label>
+            <select id="residence">
+                <option value="1">Residence A</option>
+                <option value="2">Residence B</option>
+            </select>
+            <button type="submit">Assign</button>
+        </form>
+    </div>
+
+    <div>
+        <h2>Submit Maintenance Request</h2>
+        <form id="submitRequestForm">
+            <label for="requestResidence">Residence:</label>
+            <select id="requestResidence">
+                <option value="1">Residence A</option>
+                <option value="2">Residence B</option>
+            </select>
+            <label for="description">Description:</label>
+            <input type="text" id="description" required>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    <div id="university-details"></div>
+
+    <script>
+        // JavaScript code for managing the university system
+        class Student {
+            constructor(id, name, residence = null) {
+                this.id = id;
+                this.name = name;
+                this.residence = residence;
+            }
+
+            assignResidence(residence) {
+                this.residence = residence;
+            }
+        }
+
+        class Residence {
+            constructor(id, name, capacity) {
+                this.id = id;
+                this.name = name;
+                this.capacity = capacity;
+                this.occupants = [];
+            }
+
+            addStudent(student) {
+                if (this.occupants.length < this.capacity) {
+                    this.occupants.push(student);
+                    student.assignResidence(this);
+                } else {
+                    console.log("No room available in this residence.");
+                }
+            }
+
+            removeStudent(student) {
+                this.occupants = this.occupants.filter(occupant => occupant.id !== student.id);
+                student.assignResidence(null);
+            }
+        }
+
+        class MaintenanceRequest {
+            constructor(id, residence, description) {
+                this.id = id;
+                this.residence = residence;
+                this.description = description;
+                this.status = "Pending";
+            }
+
+            resolve() {
+                this.status = "Resolved";
+            }
+        }
+
+        class ResidenceManager {
+            constructor() {
+                this.residences = [];
+                this.students = [];
+                this.requests = [];
+            }
+
+            addResidence(residence) {
+                this.residences.push(residence);
+            }
+
+            addStudent(student) {
+                this.students.push(student);
+            }
+
+            createMaintenanceRequest(residence, description) {
+                const requestId = this.requests.length + 1;
+                const request = new MaintenanceRequest(requestId, residence, description);
+                this.requests.push(request);
+                return request;
+            }
+
+            resolveRequest(requestId) {
+                const request = this.requests.find(req => req.id === requestId);
+                if (request) {
+                    request.resolve();
+                } else {
+                    console.log("Request not found.");
+                }
+            }
+
+            getDetails() {
+                let details = "<h2>University Details</h2><h3>Residences</h3><ul>";
+                this.residences.forEach(res => {
+                    details += `<li>${res.name} (Capacity: ${res.capacity}, Occupants: ${res.occupants.length})</li>`;
+                });
+                details += "</ul><h3>Students</h3><ul>";
+                this.students.forEach(stu => {
+                    details += `<li>${stu.name} - Residence: ${stu.residence ? stu.residence.name : "None"}</li>`;
+                });
+                details += "</ul><h3>Maintenance Requests</h3><ul>";
+                this.requests.forEach(req => {
+                    details += `<li>Request ID: ${req.id}, Residence: ${req.residence.name}, Description: ${req.description}, Status: ${req.status}</li>`;
+                });
+                details += "</ul>";
+                document.getElementById('university-details').innerHTML = details;
+            }
+        }
+
+        // Initialize the system
+        const manager = new ResidenceManager();
+        const residenceA = new Residence(1, "Residence A", 2);
+        const residenceB = new Residence(2, "Residence B", 3);
+        manager.addResidence(residenceA);
+        manager.addResidence(residenceB);
+
+        const student1 = new Student(1, "Alice");
+        const student2 = new Student(2, "Bob");
+        manager.addStudent(student1);
+        manager.addStudent(student2);
+
+        // Handle form submissions
+        document.getElementById('assignResidenceForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const studentId = parseInt(document.getElementById('student').value);
+            const residenceId = parseInt(document.getElementById('residence').value);
+            const student = manager.students.find(stu => stu.id === studentId);
+            const residence = manager.residences.find(res => res.id === residenceId);
+            residence.addStudent(student);
+            manager.getDetails();
+        });
+
+        document.getElementById('submitRequestForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const residenceId = parseInt(document.getElementById('requestResidence').value);
+            const description = document.getElementById('description').value;
+            const residence = manager.residences.find(res => res.id === residenceId);
+            manager.createMaintenanceRequest(residence, description);
+            manager.getDetails();
+        });
+
+        // Initial load of details
+        manager.getDetails();
+    </script>
 </body>
 </html>
